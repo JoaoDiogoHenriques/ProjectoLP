@@ -1,5 +1,4 @@
-ProjectoLP
-Projecto para a disciplina de LP
+Sistema de hereditariedade de genes
 
 Membros da Equipa:
 Bruno Silva, nº 170100186
