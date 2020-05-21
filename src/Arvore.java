@@ -63,7 +63,7 @@ public class Arvore {
 	 */
 	private boolean verificarGenes(LinkedList<No> base) {
 		for (No no : base) {
-			if (no.getGenes() == null || no.getGenes().size() < 2) {
+			if (no.getParGenes() == null || no.getParGenes().size() < 1) {
 				return false;
 			}
 		}
@@ -94,68 +94,141 @@ public class Arvore {
 		return visitados;
 	}
 
-	// TODO: verificar se é dominante, comparado au outro gene
-	public void probabilidades() {
+	
+	public LinkedList<LinkedList<GeneResutado>> probabilidades() {
 		LinkedList<No> combinacoes = todasCombinacoes();
-		LinkedList<String> vistos = new LinkedList<String>();
-		LinkedList<Integer> ocurrencias = new LinkedList<Integer>();
-		
 		System.out.println("nº de combinacoes: " + combinacoes.size());
+		
+		LinkedList<LinkedList<GeneResutado>> todosResultados = new LinkedList<LinkedList<GeneResutado>>();
+		for (int i = 0; i < combinacoes.getFirst().getParGenes().size(); i++) {
+			LinkedList<GeneResutado> geneResutados = new LinkedList<GeneResutado>();
+			for (int j = 0; j < combinacoes.size(); j++) {
+				ParGenes parGene = combinacoes.get(j).getParGenes().get(i); //Vai a cada pessoa boscar um par
+				
+				if (parGene.dominante() == null) { // for false/false or true/true
 
-		for (No pessoa : combinacoes) { // vai a cada pessoa
-			for (Gene gene : pessoa.getGenes()) { // vai a cada gene
-				boolean existe = false;
-				for (int i = 0; i < vistos.size(); i++) {
-					String informacaoGene = vistos.get(i);
-					if (gene.getDescricao().equals(informacaoGene)) {
-						Integer ocorrencia = ocurrencias.get(i);
-						ocorrencia++;
-						ocurrencias.set(i, ocorrencia);
-						existe = true;
-						System.out.println("Existiu");
+					boolean existe = false;
+					for (GeneResutado geneResultado : geneResutados) {
+						if (geneResultado.getDescricao().equals(parGene.getGene1().getDescricao())) {
+							geneResultado.adicionarMetadeNVezes();
+							existe = true;
+							break;
+						}
+					}
+					if (!existe) {
+						registar(parGene.getGene1(), false, geneResutados);
+					} else {
+						existe = false;
+					}
+
+					for (GeneResutado geneResultado : geneResutados) {
+						if (geneResultado.getDescricao().equals(parGene.getGene2().getDescricao())) {
+							geneResultado.adicionarMetadeNVezes();
+							existe = true;
+							break;
+						}
+					}
+					if (!existe) {
+						registar(parGene.getGene2(), false, geneResutados);
+					}
+				} else {
+					boolean existe = false;
+					for (GeneResutado geneResultado : geneResutados) {
+						if (geneResultado.getDescricao().equals(parGene.dominante().getDescricao())) {
+							geneResultado.adicionarNVezes();
+							existe = true;
+							break;
+						}
+					}
+					if (!existe) {
+						registar(parGene.dominante(), true, geneResutados);
 					}
 				}
-				if (!existe) {
-					System.out.println("Não existiu");
-					vistos.add(gene.getDescricao());
-					ocurrencias.add(1);
-				}
 			}
+			todosResultados.add(geneResutados);
 		}
-		for (int i = 0; i < vistos.size(); i++) {
-			System.out.println(vistos.get(i) + ": " + ocurrencias.get(i));
-		}
+		calcularProbabilidades(todosResultados);
+		return todosResultados;
 	}
 
-	private LinkedList<No> todasCombinacoes() {
-		LinkedList<No> faltaVizitar = (LinkedList<No>) base.clone();
-		int tamanhoGeracao = faltaVizitar.size();
-
-		while (tamanhoGeracao != 1) {
-			for (int i = 0; i < tamanhoGeracao / 2; i++) {
-				todasCombinacoes(faltaVizitar);
-			}
-			tamanhoGeracao = tamanhoGeracao / 2;
+	private LinkedList<No> todasCombinacoes() {	
+		LinkedList<LinkedList<No>> todos = new LinkedList<>();
+		LinkedList<No> baseClone = (LinkedList<No>) base.clone();
+		
+		System.out.println("Tamanho da base: " + baseClone.size());
+		
+		int tamanhoBase = baseClone.size();
+		for(int i = 0; i < tamanhoBase; i++) {
+			LinkedList<No> familiares = new LinkedList<No>();
+			familiares.add(baseClone.remove());
+			todos.add(familiares);
 		}
-		return faltaVizitar;
+		
+		System.out.println("Tamanho dos todos: " + todos.size());
+		
+		while(todos.size() != 1) {
+			for (int i = 0; i < todos.size()/2; i++) {
+				todos.add(combinarPar(todos.remove(), todos.remove()));
+			}
+		}
+		return todos.getFirst();
+	}
+	
+	private LinkedList<No> combinarPar(LinkedList<No> f1, LinkedList<No> f2){
+		LinkedList<No> novaFamilia = new LinkedList<No>();
+		for (No pessoa1 : f1) {
+			for (No pessoa2 : f2) {
+				ArrayList<ParGenes> parGenes1 = new ArrayList<ParGenes>(); // Combinações possiveis por par
+				ArrayList<ParGenes> parGenes2 = new ArrayList<ParGenes>();
+				ArrayList<ParGenes> parGenes3 = new ArrayList<ParGenes>();
+				ArrayList<ParGenes> parGenes4 = new ArrayList<ParGenes>();
+
+				for (int i = 0; i < pessoa1.getParGenes().size(); i++) {// por as combinações possiveis
+
+					ParGenes p1 = pessoa1.getParGenes().get(i);
+					ParGenes p2 = pessoa2.getParGenes().get(i);
+
+					// 4 pares diferentes vindo do memso par
+					parGenes1.add(new ParGenes(p1.getGene1(), p2.getGene1()));
+					parGenes2.add(new ParGenes(p1.getGene1(), p2.getGene2()));
+					parGenes3.add(new ParGenes(p1.getGene2(), p2.getGene1()));
+					parGenes4.add(new ParGenes(p1.getGene2(), p2.getGene2()));
+				}
+				novaFamilia.add(new No(null, null, parGenes1)); //Adiciona ao vizitar
+				novaFamilia.add(new No(null, null, parGenes2));
+				novaFamilia.add(new No(null, null, parGenes3));
+				novaFamilia.add(new No(null, null, parGenes4));
+			}
+		}
+		return novaFamilia;
 	}
 
-	private void todasCombinacoes(LinkedList<No> faltaVizitar) {
-		int tamanhoGeracao = faltaVizitar.size();
+	private void registar(Gene gene, boolean dominante, LinkedList<GeneResutado> geneResutados) {
+		GeneResutado geneResutado = new GeneResutado();
+		geneResutado.setDescricao(gene.getDescricao());
 
-		for (int i = 0; i < tamanhoGeracao / 2; i++) {
-			No pessoa1 = faltaVizitar.remove();
-			No pessoa2 = faltaVizitar.remove();
-
-			for (Gene p1 : pessoa1.getGenes()) {
-				for (Gene p2 : pessoa2.getGenes()) {
-					ArrayList<Gene> genes = new ArrayList<Gene>();
-					genes.add(p1);
-					genes.add(p2);
-					No combinacao = new No();
-					combinacao.setGenes(genes);
-					faltaVizitar.add(combinacao);
-				}
+		if (dominante) {
+			geneResutado.adicionarNVezes();
+		} else {
+			geneResutado.adicionarMetadeNVezes();
+		}
+		geneResutados.add(geneResutado);
+	}
+	
+	private void calcularProbabilidades(LinkedList<LinkedList<GeneResutado>> todosResultados) {
+		
+		LinkedList<Double> totais = new LinkedList<Double>();
+		for(LinkedList<GeneResutado> geneResultados : todosResultados) {
+			double total = 0;
+			for (GeneResutado geneResutado : geneResultados) {
+				total = geneResutado.getnVezes() + total;
+			}
+			totais.add(total);
+		}
+		
+		for(int i = 0; i < todosResultados.size(); i++) {
+			for (GeneResutado geneResutado : todosResultados.get(i)) {
+				geneResutado.setProbabilidade((geneResutado.getnVezes()/totais.get(i))*100);
 			}
 		}
 	}
