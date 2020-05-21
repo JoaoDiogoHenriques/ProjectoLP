@@ -3,17 +3,17 @@ import java.util.ArrayList;
 public class No {
     private No filhoDireita;
     private No filhoEsquerda;
-    private ArrayList<Gene> genes;
+    private ArrayList<ParGenes> pares;
     private int num; //For debugging
 
     public No(){
     	
     }
     
-    public No(No filhoDireita, No filhoEsquerda, ArrayList<Gene> genes){
+    public No(No filhoDireita, No filhoEsquerda, ArrayList<ParGenes> pares){
         this.filhoDireita = filhoDireita;
         this. filhoEsquerda = filhoEsquerda;
-        this.genes = genes;
+        this.pares = pares;
     }
 
 	public No getFilhoDireita() {
@@ -32,12 +32,12 @@ public class No {
 		this.filhoEsquerda = filhoEsquerda;
 	}
 
-	public ArrayList<Gene> getGenes() {
-		return genes;
+	public ArrayList<ParGenes> getParGenes() {
+		return pares;
 	}
 
-	public void setGenes(ArrayList<Gene> genes) {
-		this.genes = genes;
+	public void setParGenes(ArrayList<ParGenes> pares) {
+		this.pares = pares;
 	}
 
 	//For debugging
