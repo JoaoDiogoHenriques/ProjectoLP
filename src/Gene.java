@@ -15,4 +15,9 @@ public class Gene {
     public boolean isDominante() {
         return dominante;
     }
+
+	@Override
+	public String toString() {
+		return "Gene [" + descricao + ", dominante=" + dominante + "]";
+	}
 }
