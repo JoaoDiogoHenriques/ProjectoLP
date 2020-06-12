@@ -1,11 +1,12 @@
 public class ParGenes {
-
-    private Gene gene1;
+	private String tipo;
+	private Gene gene1;
     private Gene gene2;
 
-    public ParGenes(Gene gene1, Gene gene2){
+    public ParGenes(Gene gene1, Gene gene2, String tipo){
         this.gene1 = gene1;
         this.gene2 = gene2;
+        this.tipo = tipo;
     }
 
     public Gene getGene1() {
@@ -16,7 +17,23 @@ public class ParGenes {
         return gene2;
     }
 
-    //Escolher aleatoriamente um dos dois genes e retorna-lo
+    public void setGene1(Gene gene1) {
+		this.gene1 = gene1;
+	}
+
+	public void setGene2(Gene gene2) {
+		this.gene2 = gene2;
+	}
+
+	public String getTipo() {
+		return tipo;
+	}
+
+	public void setTipo(String tipo) {
+		this.tipo = tipo;
+	}
+
+	//Escolher aleatoriamente um dos dois genes e retorna-lo
     public Gene escolher(){
         int range = 2;
         int rand = (int)(Math.random() * range) +1;
@@ -41,4 +58,11 @@ public class ParGenes {
         }
         return null;
     }
+
+	@Override
+	public String toString() {
+		return "ParGenes [tipo=" + tipo + ", " + gene1 + ", " + gene2 + "]";
+	}
+    
+
 }

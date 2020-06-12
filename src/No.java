@@ -1,16 +1,15 @@
 import java.util.ArrayList;
 
 public class No {
+	private No filhoEsquerda;
     private No filhoDireita;
-    private No filhoEsquerda;
     private ArrayList<ParGenes> pares;
-    private int num; //For debugging
 
     public No(){
     	
     }
     
-    public No(No filhoDireita, No filhoEsquerda, ArrayList<ParGenes> pares){
+    public No(No filhoEsquerda, No filhoDireita, ArrayList<ParGenes> pares){
         this.filhoDireita = filhoDireita;
         this. filhoEsquerda = filhoEsquerda;
         this.pares = pares;
@@ -40,17 +39,9 @@ public class No {
 		this.pares = pares;
 	}
 
-	//For debugging
-	public int getNum() {
-		return num;
-	}
-
-	public void setNum(int num) {
-		this.num = num;
-	}
-
 	@Override
 	public String toString() {
-		return "No [num=" + num + "]";
+		return "Pessoa [pares=" + pares + "]";
 	}
+
 }

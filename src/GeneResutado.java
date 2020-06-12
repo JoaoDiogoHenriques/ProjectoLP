@@ -2,6 +2,7 @@
 public class GeneResutado {
 	private double nVezes = 0;
 	private double probabilidade;
+	private String tipo;
 	private String descricao;
 	
 	public GeneResutado() {
@@ -12,16 +13,20 @@ public class GeneResutado {
 		return nVezes;
 	}
 
-	public void setnVezes(double nVezes) {
-		this.nVezes = nVezes;
-	}
-
 	public double getProbabilidade() {
 		return probabilidade;
 	}
 
 	public void setProbabilidade(double probabilidade) {
 		this.probabilidade = probabilidade;
+	}
+	
+	public String getTipo() {
+		return tipo;
+	}
+
+	public void setTipo(String tipo) {
+		this.tipo = tipo;
 	}
 
 	public String getDescricao() {
