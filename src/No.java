@@ -4,17 +4,15 @@ public class No {
 	private No filhoEsquerda;
     private No filhoDireita;
     private ArrayList<ParGenes> pares;
-    private int num;
 
     public No(){
     	
     }
     
-    public No(No filhoEsquerda, No filhoDireita, ArrayList<ParGenes> pares, int num){
+    public No(No filhoEsquerda, No filhoDireita, ArrayList<ParGenes> pares){
         this.filhoDireita = filhoDireita;
         this. filhoEsquerda = filhoEsquerda;
         this.pares = pares;
-        this.num = num;
     }
 
 	public No getFilhoDireita() {
@@ -40,14 +38,10 @@ public class No {
 	public void setParGenes(ArrayList<ParGenes> pares) {
 		this.pares = pares;
 	}
-	
-	public int getNum() {
-		return num;
-	}
 
 	@Override
 	public String toString() {
-		//return "Pessoa [pares=" + pares + " num=" + num + "]";
-		return "Pessoa [num=" + num + "]";
+		return "Pessoa [pares=" + pares + "]";
 	}
+
 }

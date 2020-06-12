@@ -28,7 +28,7 @@ public class Arvore {
 		}
 
 		// Falta verificar os pares
-		if (!verificarSincroniaGenes(base)) {
+		if (!verificarSincroniaGenes(novaBase)) {
 			throw new IllegalArgumentException("Os pares de genes tem de estar sincronizados!");
 		}
 
@@ -57,10 +57,11 @@ public class Arvore {
 				ArrayList<ParGenes> parGenes = new ArrayList<>();
 
 				for (int j = 0; j < pessoa1.getParGenes().size(); j++) {
-					parGenes.add(new ParGenes(pessoa1.getParGenes().get(j).escolher(),
-							pessoa2.getParGenes().get(j).escolher()));
+					ParGenes parGenesP1= pessoa1.getParGenes().get(j);
+					ParGenes parGenesP2 = pessoa2.getParGenes().get(j);
+					parGenes.add(new ParGenes(parGenesP1.escolher(), parGenesP2.escolher(), parGenesP1.getTipo()));
 				}
-				novaBase.add(new No(pessoa1, pessoa2, parGenes, pessoa1.getNum() + pessoa2.getNum()));
+				novaBase.add(new No(pessoa1, pessoa2, parGenes));
 			}
 			tamanhoGeracao = tamanhoGeracao / 2;
 		}
@@ -95,6 +96,15 @@ public class Arvore {
 	}
 
 	private boolean verificarSincroniaGenes(LinkedList<No> base) {
+		for(No pessoa : base) {
+			for(No outraPessoa : base) {
+				for(int i = 0; i < pessoa.getParGenes().size(); i++) {
+					if(!pessoa.getParGenes().get(i).getTipo().equals(outraPessoa.getParGenes().get(i).getTipo())) {
+						return false;
+					}
+				}
+			}
+		}
 		return true;
 	}
 
@@ -183,7 +193,6 @@ public class Arvore {
 	 */
 	public LinkedList<LinkedList<GeneResutado>> probabilidades() {
 		LinkedList<No> combinacoes = todasCombinacoes();
-		System.out.println("n� de combinacoes: " + combinacoes.size());
 
 		LinkedList<LinkedList<GeneResutado>> todosResultados = new LinkedList<LinkedList<GeneResutado>>();
 		for (int i = 0; i < combinacoes.getFirst().getParGenes().size(); i++) {
@@ -202,7 +211,7 @@ public class Arvore {
 						}
 					}
 					if (!existe) {
-						registar(parGene.getGene1(), false, geneResutados);
+						registar(parGene.getGene1(), false, geneResutados, parGene.getTipo());
 					} else {
 						existe = false;
 					}
@@ -215,7 +224,7 @@ public class Arvore {
 						}
 					}
 					if (!existe) {
-						registar(parGene.getGene2(), false, geneResutados);
+						registar(parGene.getGene2(), false, geneResutados, parGene.getTipo());
 					}
 				} else {
 					boolean existe = false;
@@ -227,7 +236,7 @@ public class Arvore {
 						}
 					}
 					if (!existe) {
-						registar(parGene.dominante(), true, geneResutados);
+						registar(parGene.dominante(), true, geneResutados, parGene.getTipo());
 					}
 				}
 			}
@@ -248,16 +257,12 @@ public class Arvore {
 		LinkedList<LinkedList<No>> todos = new LinkedList<>();
 		LinkedList<No> baseClone = (LinkedList<No>) base.clone();
 
-		System.out.println("Tamanho da base: " + baseClone.size());
-
 		int tamanhoBase = baseClone.size();
 		for (int i = 0; i < tamanhoBase; i++) {
 			LinkedList<No> familiares = new LinkedList<No>();
 			familiares.add(baseClone.remove());
 			todos.add(familiares);
 		}
-
-		System.out.println("Tamanho dos todos: " + todos.size());
 
 		while (todos.size() != 1) {
 			for (int i = 0; i < todos.size() / 2; i++) {
@@ -291,16 +296,16 @@ public class Arvore {
 					ParGenes p2 = pessoa2.getParGenes().get(i);
 
 					// 4 pares diferentes vindo do mesmo par
-					parGenes1.add(new ParGenes(p1.getGene1(), p2.getGene1()));
-					parGenes2.add(new ParGenes(p1.getGene1(), p2.getGene2()));
-					parGenes3.add(new ParGenes(p1.getGene2(), p2.getGene1()));
-					parGenes4.add(new ParGenes(p1.getGene2(), p2.getGene2()));
+					parGenes1.add(new ParGenes(p1.getGene1(), p2.getGene1(), p1.getTipo()));
+					parGenes2.add(new ParGenes(p1.getGene1(), p2.getGene2(), p1.getTipo()));
+					parGenes3.add(new ParGenes(p1.getGene2(), p2.getGene1(), p1.getTipo()));
+					parGenes4.add(new ParGenes(p1.getGene2(), p2.getGene2(), p1.getTipo()));
 				}
 				// Adiciona ao novaCombinacao
-				novaCombinacao.add(new No(null, null, parGenes1, 0));
-				novaCombinacao.add(new No(null, null, parGenes2, 0));
-				novaCombinacao.add(new No(null, null, parGenes3, 0));
-				novaCombinacao.add(new No(null, null, parGenes4, 0));
+				novaCombinacao.add(new No(null, null, parGenes1));
+				novaCombinacao.add(new No(null, null, parGenes2));
+				novaCombinacao.add(new No(null, null, parGenes3));
+				novaCombinacao.add(new No(null, null, parGenes4));
 			}
 		}
 		return novaCombinacao;
@@ -313,8 +318,9 @@ public class Arvore {
 	 * @param dominante,     se e dominante
 	 * @param geneResutados, lista de resultados
 	 */
-	private void registar(Gene gene, boolean dominante, LinkedList<GeneResutado> geneResutados) {
+	private void registar(Gene gene, boolean dominante, LinkedList<GeneResutado> geneResutados, String tipo) {
 		GeneResutado geneResutado = new GeneResutado();
+		geneResutado.setTipo(tipo);
 		geneResutado.setDescricao(gene.getDescricao());
 
 		if (dominante) {

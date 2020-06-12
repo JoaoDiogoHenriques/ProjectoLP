@@ -59,13 +59,13 @@ public class Main {
 
 				String tipo;
 				if(pessoas.isEmpty()) {
-					System.out.println("Qual e o tipo de gene? (Cor de Olhos, Cor do cabelo...)");
+					System.out.println("Qual é a caracteristica do gene? (Cor/forma...)");
 					tipo = scan.nextLine();
 				} else {
-					tipo = null;
+					tipo = pessoas.getFirst().getParGenes().get(j).getTipo();
 				}
 
-				parGenes.add(new ParGenes(criarGene(tipo), criarGene(tipo)));
+				parGenes.add(new ParGenes(criarGene(), criarGene(), tipo));
 				pessoa.setParGenes(parGenes);
 			}
 			pessoas.add(pessoa);
@@ -75,7 +75,7 @@ public class Main {
 		funcionalidades(pessoas, arvore);
 	}
 
-	public static Gene criarGene(String tipo) {
+	public static Gene criarGene() {
 		System.out.println("===NOVO GENE===");
 		System.out.println("Escreva uma descricao para o gene:");
 		String descricao = scan.nextLine();
@@ -90,26 +90,27 @@ public class Main {
 		LinkedList<No> pessoas = new LinkedList<No>();
 
 		ArrayList<ParGenes> parGenes1 = new ArrayList<ParGenes>();
-		parGenes1.add(new ParGenes(new Gene("Olhos castanhos", true), new Gene("Olhos verdes", false)));
-		parGenes1.add(new ParGenes(new Gene("Cabelos castanhos", true), new Gene("Cabelos castanhos", true)));
-		pessoas.add(new No(null, null, parGenes1, 1));
+		parGenes1.add(new ParGenes(new Gene("castanhos", true), new Gene("verdes", false), "Olhos"));
+		parGenes1.add(new ParGenes(new Gene("castanhos", true), new Gene("castanhos", true), "Cabelos"));
+		pessoas.add(new No(null, null, parGenes1));
 
 		ArrayList<ParGenes> parGenes2 = new ArrayList<ParGenes>();
-		parGenes2.add(new ParGenes(new Gene("Olhos castanhos", true), new Gene("Olhos verdes", false)));
-		parGenes2.add(new ParGenes(new Gene("Cabelos castanhos", true), new Gene("Cabelos loiros", false)));
-		pessoas.add(new No(null, null, parGenes2, 2));
+		parGenes2.add(new ParGenes(new Gene("castanhos", true), new Gene("verdes", false), "Olhos"));
+		parGenes2.add(new ParGenes(new Gene("castanhos", true), new Gene("loiros", false), "Cabelos"));
+		pessoas.add(new No(null, null, parGenes2));
 
 		ArrayList<ParGenes> parGenes3 = new ArrayList<ParGenes>();
-		parGenes3.add(new ParGenes(new Gene("Olhos castanhos", true), new Gene("Olhos verdes", false)));
-		parGenes3.add(new ParGenes(new Gene("Cabelos castanhos", true), new Gene("Cabelos loiros", false)));
-		pessoas.add(new No(null, null, parGenes3, 3));
+		parGenes3.add(new ParGenes(new Gene("castanhos", true), new Gene("verdes", false), "Olhos"));
+		parGenes3.add(new ParGenes(new Gene("castanhos", true), new Gene("loiros", false), "Cabelos"));
+		pessoas.add(new No(null, null, parGenes3));
 
 		ArrayList<ParGenes> parGenes4 = new ArrayList<ParGenes>();
-		parGenes4.add(new ParGenes(new Gene("Olhos castanhos", true), new Gene("Olhos verdes", false)));
-		parGenes4.add(new ParGenes(new Gene("Cabelos loiros", false), new Gene("Cabelos loiros", false)));
-		pessoas.add(new No(null, null, parGenes4, 4));
+		parGenes4.add(new ParGenes(new Gene("castanhos", true), new Gene("verdes", false), "Olhos"));
+		parGenes4.add(new ParGenes(new Gene("loiros", false), new Gene("loiros", false), "Cabelos"));
+		pessoas.add(new No(null, null, parGenes4));
 
 		Arvore arvore = new Arvore();
+		mostrarGeracao(pessoas);
 		arvore.addBase(pessoas);
 		funcionalidades(pessoas, arvore);
 	}
@@ -174,8 +175,8 @@ public class Main {
 		}
 		try {
 			ParGenes parGenes = pessoa.getParGenes().get(inputInt() - 1);
-			parGenes.setGene1(criarGene(null)); //TODO: falta por o tipo de gene
-			parGenes.setGene2(criarGene(null));
+			parGenes.setGene1(criarGene()); //TODO: falta por o tipo de gene
+			parGenes.setGene2(criarGene());
 		} catch (IndexOutOfBoundsException e) {
 			System.out.println("O par de genes nao existe, operacao cancelada!");
 			return;
@@ -226,6 +227,7 @@ public class Main {
 		LinkedList<LinkedList<GeneResutado>> resultados = arvore.probabilidades();
 
 		for (LinkedList<GeneResutado> geneResutados : resultados) {
+			System.out.println(geneResutados.getFirst().getTipo()+":");
 			for (GeneResutado geneResutado : geneResutados) {
 				System.out.println(geneResutado.getDescricao() + " = " + geneResutado.getProbabilidade() + "%");
 			}
